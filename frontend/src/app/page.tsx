@@ -3,18 +3,19 @@
 import { ShieldCheck, GitPullRequest, AlertTriangle, Zap } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import Link from 'next/link'
-
-const data = [
-  { name: 'Mon', score: 8.5 },
-  { name: 'Tue', score: 7.2 },
-  { name: 'Wed', score: 9.1 },
-  { name: 'Thu', score: 8.8 },
-  { name: 'Fri', score: 6.4 },
-  { name: 'Sat', score: 9.5 },
-  { name: 'Sun', score: 9.2 },
-]
+import { useQuery } from '@tanstack/react-query'
+import { getAnalyticsSummary, getAnalyticsTrends, getReviews } from '@/lib/api'
+import { formatDistanceToNow } from 'date-fns'
 
 export default function DashboardPage() {
+  const { data: summary } = useQuery({ queryKey: ['analytics-summary'], queryFn: getAnalyticsSummary })
+  const { data: trends } = useQuery({ queryKey: ['analytics-trends'], queryFn: getAnalyticsTrends })
+  const { data: reviewsData } = useQuery({ queryKey: ['reviews-recent'], queryFn: () => getReviews(1) })
+
+  const recentReviews = reviewsData?.data?.slice(0, 5) || [];
+
+
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
@@ -29,8 +30,8 @@ export default function DashboardPage() {
           </div>
           <div className="relative z-10">
             <h3 className="text-sm font-medium text-muted-foreground mb-1">Total PRs Reviewed</h3>
-            <div className="text-4xl font-bold text-white mb-2">1,284</div>
-            <p className="text-xs text-green-400 flex items-center"><Zap className="w-3 h-3 mr-1" /> +12% from last week</p>
+            <div className="text-4xl font-bold text-white mb-2">{summary?.total_reviews ?? '-'}</div>
+            <p className="text-xs text-green-400 flex items-center"><Zap className="w-3 h-3 mr-1" /> Live tracking</p>
           </div>
         </div>
         
@@ -40,7 +41,7 @@ export default function DashboardPage() {
           </div>
           <div className="relative z-10">
             <h3 className="text-sm font-medium text-muted-foreground mb-1">Average Quality Score</h3>
-            <div className="text-4xl font-bold text-white mb-2">8.4<span className="text-xl text-muted-foreground">/10</span></div>
+            <div className="text-4xl font-bold text-white mb-2">{summary?.avg_score ?? '-'}<span className="text-xl text-muted-foreground">/10</span></div>
             <p className="text-xs text-green-400">Trending upwards</p>
           </div>
         </div>
@@ -51,8 +52,8 @@ export default function DashboardPage() {
           </div>
           <div className="relative z-10">
             <h3 className="text-sm font-medium text-muted-foreground mb-1">Critical Vulnerabilities Blocked</h3>
-            <div className="text-4xl font-bold text-destructive mb-2">47</div>
-            <p className="text-xs text-muted-foreground">Across 12 repositories</p>
+            <div className="text-4xl font-bold text-destructive mb-2">{summary?.critical_blocked ?? '-'}</div>
+            <p className="text-xs text-muted-foreground">Across all repositories</p>
           </div>
         </div>
         
@@ -78,7 +79,7 @@ export default function DashboardPage() {
           <h3 className="text-lg font-semibold text-white mb-6">Code Quality Trend</h3>
           <div className="flex-1 w-full min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
+              <LineChart data={trends || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="name" stroke="#64748b" />
                 <YAxis stroke="#64748b" domain={[0, 10]} />
@@ -95,22 +96,27 @@ export default function DashboardPage() {
         <div className="glass rounded-xl border border-border/50 p-6">
           <h3 className="text-lg font-semibold text-white mb-6">Recent Swarm Activity</h3>
           <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center justify-between border-b border-border/50 pb-3 last:border-0">
+            {recentReviews.map((review: any) => (
+              <div key={review.id} className="flex items-center justify-between border-b border-border/50 pb-3 last:border-0">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
-                    <GitPullRequest className="w-4 h-4 text-primary" />
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${review.recommendation === 'APPROVE' ? 'bg-green-500/10 text-green-500' : review.recommendation === 'REQUEST_CHANGES' ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                    <GitPullRequest className="w-4 h-4" />
                   </div>
                   <div>
-                    <Link href={`/reviews/${1000 + i}`} className="text-sm font-medium text-white hover:text-primary transition-colors">
-                      PR #{1000 + i} analyzed
+                    <Link href={`/reviews/${review.id}`} className="text-sm font-medium text-white hover:text-primary transition-colors block max-w-[200px] truncate">
+                      {review.pr_title || `PR #${review.pr_number} analyzed`}
                     </Link>
-                    <p className="text-xs text-muted-foreground">frontend-repo</p>
+                    <p className="text-xs text-muted-foreground">{review.repository?.full_name || 'Repository'}</p>
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground">{i * 2}m ago</span>
+                <span className="text-xs text-muted-foreground">
+                  {review.created_at ? formatDistanceToNow(new Date(review.created_at), { addSuffix: true }) : ''}
+                </span>
               </div>
             ))}
+            {recentReviews.length === 0 && (
+              <div className="text-sm text-muted-foreground py-4 text-center">No recent activity</div>
+            )}
           </div>
         </div>
       </div>

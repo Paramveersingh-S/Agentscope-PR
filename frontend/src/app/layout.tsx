@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopNav } from "@/components/layout/TopNav";
+import QueryProvider from "./QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,9 @@ export default function RootLayout({
         <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
           <TopNav />
           <main className="flex-1 overflow-auto p-6 md:p-8">
-            {children}
+            <QueryProvider>
+              {children}
+            </QueryProvider>
           </main>
         </div>
       </body>

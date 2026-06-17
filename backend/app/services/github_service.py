@@ -18,6 +18,39 @@ class GitHubService:
         else:
             # Fallback or dummy
             self.gh = Github()
+            
+    def fetch_all_installation_repositories(self) -> list[dict]:
+        """Fetches all repositories across all installations of this GitHub App."""
+        if not settings.GITHUB_APP_PRIVATE_KEY:
+            return []
+            
+        integration = GithubIntegration(
+            settings.GITHUB_APP_ID,
+            settings.GITHUB_APP_PRIVATE_KEY
+        )
+        
+        all_repos = []
+        for installation in integration.get_installations():
+            access_token = integration.get_access_token(installation.id).token
+            gh = Github(access_token)
+            
+            # Github API for installation repos is not fully wrapped in PyGithub in an easy way,
+            # but we can use the requester to hit the endpoint
+            headers, data = gh._Github__requester.requestJsonAndCheck(
+                "GET", "/installation/repositories"
+            )
+            
+            for repo_data in data.get("repositories", []):
+                all_repos.append({
+                    "github_repo_id": repo_data["id"],
+                    "full_name": repo_data["full_name"],
+                    "display_name": repo_data["name"],
+                    "description": repo_data.get("description", ""),
+                    "default_branch": repo_data.get("default_branch", "main"),
+                    "installation_id": installation.id
+                })
+                
+        return all_repos
 
     def get_pr_diff(self, repo_full_name: str, pr_number: int) -> list[str]:
         """Fetches the raw diff of a pull request and chunks it by file."""

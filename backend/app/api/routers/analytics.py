@@ -1,15 +1,52 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict, Any
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy import func
+from datetime import datetime, timedelta
+
+from app.api.deps import get_db
+from app.models.pr_review import PRReview
+from app.models.finding import Finding
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["Analytics"])
 
 @router.get("/summary")
-async def get_analytics_summary():
-    return {"total_reviews": 0, "avg_score": 0.0}
+async def get_analytics_summary(db: AsyncSession = Depends(get_db)):
+    # Total reviews
+    res_total = await db.execute(select(func.count(PRReview.id)))
+    total_reviews = res_total.scalar_one()
+    
+    # Average score
+    res_score = await db.execute(select(func.avg(PRReview.overall_score)))
+    avg_score = res_score.scalar_one() or 0.0
+    
+    # Critical findings blocked
+    res_critical = await db.execute(
+        select(func.count(Finding.id))
+        .filter(Finding.severity == "CRITICAL")
+    )
+    critical_blocked = res_critical.scalar_one()
+    
+    return {
+        "total_reviews": total_reviews,
+        "avg_score": round(avg_score, 1),
+        "critical_blocked": critical_blocked
+    }
 
 @router.get("/trends")
-async def get_analytics_trends(days: int = 7):
-    return []
+async def get_analytics_trends(days: int = 7, db: AsyncSession = Depends(get_db)):
+    # Return last 7 days of average score
+    cutoff = datetime.utcnow() - timedelta(days=days)
+    res = await db.execute(
+        select(func.date(PRReview.created_at).label("date"), func.avg(PRReview.overall_score).label("score"))
+        .filter(PRReview.created_at >= cutoff)
+        .group_by(func.date(PRReview.created_at))
+        .order_by(func.date(PRReview.created_at))
+    )
+    
+    trends = [{"name": str(row.date), "score": round(row.score, 1)} for row in res.all()]
+    return trends
 
 @router.get("/top-issues")
 async def get_top_issues():
