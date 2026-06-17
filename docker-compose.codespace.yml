@@ -46,7 +46,7 @@ services:
       - backend
     volumes: [./backend:/app]
     # Running with concurrency=2 to save Codespace RAM
-    command: celery -A app.workers.review_tasks.celery_app worker --loglevel=info --concurrency=2
+    command: celery -A app.workers.review_tasks.celery_app worker --loglevel=info --concurrency=2 -Q review_queue
     restart: unless-stopped
     deploy:
       resources:
