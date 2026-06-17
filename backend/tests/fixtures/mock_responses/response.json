@@ -1,0 +1,8 @@
+{
+  "finding_id_label": "SEC-001",
+  "category": "Security",
+  "severity": "HIGH",
+  "title": "Mock Finding",
+  "description": "This is a mock finding for testing.",
+  "recommendation": "Fix it."
+}
