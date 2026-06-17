@@ -31,6 +31,7 @@ export const updateRepositoryPolicy = (id: string, policy: any) =>
 // Analytics
 export const getAnalyticsSummary = () => fetcher<any>('/analytics/summary');
 export const getAnalyticsTrends = () => fetcher<any[]>('/analytics/trends');
+export const getAgentPerformance = () => fetcher<any[]>('/analytics/agent-performance');
 
 // Reviews
 export const getReviews = (page: number = 1) => fetcher<{data: any[], page: number}>(`/reviews?page=${page}`);

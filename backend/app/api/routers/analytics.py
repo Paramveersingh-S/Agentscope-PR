@@ -53,8 +53,30 @@ async def get_top_issues():
     return []
 
 @router.get("/agent-performance")
-async def get_agent_performance():
-    return []
+async def get_agent_performance(db: AsyncSession = Depends(get_db)):
+    from app.models.pr_review import AgentRun
+    
+    res = await db.execute(
+        select(
+            AgentRun.agent_name,
+            func.count(AgentRun.id).label("runs"),
+            func.sum(AgentRun.prompt_tokens).label("prompt_tokens"),
+            func.sum(AgentRun.completion_tokens).label("completion_tokens"),
+            func.avg(AgentRun.latency_ms).label("avg_latency")
+        )
+        .group_by(AgentRun.agent_name)
+    )
+    
+    performance = []
+    for row in res.all():
+        performance.append({
+            "agent_name": row.agent_name,
+            "runs": row.runs,
+            "total_tokens": (row.prompt_tokens or 0) + (row.completion_tokens or 0),
+            "avg_latency": round(row.avg_latency or 0, 0)
+        })
+        
+    return performance
 
 @router.get("/risk-distribution")
 async def get_risk_distribution():

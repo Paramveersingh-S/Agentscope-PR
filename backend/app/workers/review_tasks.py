@@ -119,6 +119,21 @@ def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, 
                 await session.flush()
                 
                 await svc.store_findings(str(new_review.id), final_review.get("deduplicated_findings", []))
+                
+                from app.models.pr_review import AgentRun
+                agent_runs_data = result.get("agent_runs", [])
+                for run_data in agent_runs_data:
+                    agent_run = AgentRun(
+                        review_id=new_review.id,
+                        agent_name=run_data.get("agent_name"),
+                        status=run_data.get("status"),
+                        prompt_tokens=run_data.get("prompt_tokens"),
+                        completion_tokens=run_data.get("completion_tokens"),
+                        latency_ms=run_data.get("latency_ms"),
+                        error_message=run_data.get("error_message")
+                    )
+                    session.add(agent_run)
+                    
                 await session.commit()
                 
         _run_async(store_review_findings())

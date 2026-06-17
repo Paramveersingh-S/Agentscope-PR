@@ -1,13 +1,14 @@
 "use client"
 
 import { useQuery } from '@tanstack/react-query'
-import { getAnalyticsSummary, getAnalyticsTrends } from '@/lib/api'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { ShieldCheck, AlertTriangle, Activity, Target } from 'lucide-react'
+import { getAnalyticsSummary, getAnalyticsTrends, getAgentPerformance } from '@/lib/api'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts'
+import { ShieldCheck, AlertTriangle, Activity, Target, Cpu } from 'lucide-react'
 
 export default function AnalyticsPage() {
   const { data: summary } = useQuery({ queryKey: ['analytics-summary'], queryFn: getAnalyticsSummary })
   const { data: trends } = useQuery({ queryKey: ['analytics-trends'], queryFn: getAnalyticsTrends })
+  const { data: agentPerformance } = useQuery({ queryKey: ['agent-performance'], queryFn: getAgentPerformance })
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -66,15 +67,57 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="glass rounded-xl border border-border/50 p-6 flex flex-col items-center justify-center text-center">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <Activity className="w-8 h-8 text-primary" />
+        <div className="glass rounded-xl border border-border/50 p-6 flex flex-col">
+          <h3 className="text-lg font-semibold text-white mb-6">Agent Token Usage</h3>
+          <div className="flex-1 w-full min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={agentPerformance || []} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={true} vertical={false} />
+                <XAxis type="number" stroke="#64748b" />
+                <YAxis dataKey="agent_name" type="category" stroke="#64748b" width={100} tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                  itemStyle={{ color: '#e2e8f0' }}
+                  cursor={{ fill: '#1e293b', opacity: 0.4 }}
+                />
+                <Legend />
+                <Bar dataKey="total_tokens" name="Total Tokens" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">More Analytics Coming Soon</h3>
-          <p className="text-muted-foreground max-w-sm">
-            Agent performance metrics, risk distribution charts, and repository leaderboards are currently being processed by the Swarm.
-          </p>
         </div>
+      </div>
+      
+      <div className="glass rounded-xl border border-border/50 p-6 overflow-x-auto">
+        <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
+          <Cpu className="w-5 h-5 mr-2 text-primary" />
+          Swarm Worker Telemetry
+        </h3>
+        <table className="w-full text-left text-sm text-muted-foreground">
+          <thead className="text-xs uppercase bg-muted/50 text-muted-foreground border-b border-border/50">
+            <tr>
+              <th scope="col" className="px-6 py-4 font-semibold">Agent Specialization</th>
+              <th scope="col" className="px-6 py-4 font-semibold">Tasks Run</th>
+              <th scope="col" className="px-6 py-4 font-semibold">Total Tokens</th>
+              <th scope="col" className="px-6 py-4 font-semibold">Avg Latency (ms)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(agentPerformance || []).map((agent: any, i: number) => (
+              <tr key={i} className="border-b border-border/50 last:border-0 hover:bg-accent/30 transition-colors">
+                <td className="px-6 py-4 font-medium text-white capitalize">{agent.agent_name}</td>
+                <td className="px-6 py-4">{agent.runs}</td>
+                <td className="px-6 py-4 text-purple-400 font-medium">{agent.total_tokens.toLocaleString()}</td>
+                <td className="px-6 py-4">{agent.avg_latency.toLocaleString()} ms</td>
+              </tr>
+            ))}
+            {(!agentPerformance || agentPerformance.length === 0) && (
+              <tr>
+                <td colSpan={4} className="px-6 py-8 text-center">No telemetry data available yet.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   )

@@ -58,6 +58,40 @@ class PRReviewPipeline:
             enc = tiktoken.get_encoding("cl100k_base")
         except Exception:
             enc = None
+            
+        import time
+        agent_runs = []
+        
+        async def run_agent(agent_obj, name, input_msg, prompt_toks):
+            start = time.time()
+            try:
+                res_msg = await loop.run_in_executor(None, agent_obj.reply, input_msg)
+                latency = int((time.time() - start) * 1000)
+                output_text = str(res_msg.content)
+                completion_toks = len(enc.encode(output_text)) if enc else len(output_text) // 4
+                return {
+                    "msg": res_msg,
+                    "metrics": {
+                        "agent_name": name,
+                        "prompt_tokens": prompt_toks,
+                        "completion_tokens": completion_toks,
+                        "latency_ms": latency,
+                        "status": "success"
+                    }
+                }
+            except Exception as e:
+                latency = int((time.time() - start) * 1000)
+                return {
+                    "msg": e,
+                    "metrics": {
+                        "agent_name": name,
+                        "prompt_tokens": prompt_toks,
+                        "completion_tokens": 0,
+                        "latency_ms": latency,
+                        "status": "error",
+                        "error_message": str(e)
+                    }
+                }
         
         for chunk in pr_data.get("diff_chunks", []):
             if budget_exceeded:
@@ -85,19 +119,20 @@ class PRReviewPipeline:
                         budget_exceeded = True
                         break
                     
-                    # AgentScope agents are synchronous. Run in executor.
-                    tasks.append(loop.run_in_executor(None, agent.reply, agent_input))
+                    # Run agent with metrics wrapper
+                    tasks.append(run_agent(agent, agent_name, agent_input, input_tokens))
                     
             # Wait for all specialists for this chunk
-            findings_msgs = await asyncio.gather(*tasks, return_exceptions=True)
+            results = await asyncio.gather(*tasks, return_exceptions=True)
             
-            # Filter out exceptions if an agent failed
-            for msg in findings_msgs:
-                if isinstance(msg, Msg):
-                    all_valid_findings.append(msg.content)
-                else:
-                    # msg is an Exception
-                    print(f"Agent failed on chunk: {msg}")
+            for res in results:
+                if isinstance(res, dict) and "msg" in res:
+                    agent_runs.append(res["metrics"])
+                    msg = res["msg"]
+                    if isinstance(msg, Msg):
+                        all_valid_findings.append(msg.content)
+                    else:
+                        print(f"Agent failed on chunk: {msg}")
                     
         # 3. Aggregation
         aggregator_input = Msg(
@@ -106,8 +141,26 @@ class PRReviewPipeline:
             role="user"
         )
         
+        
+        # Add aggregator to runs
+        agg_input_text = str(aggregator_input.content)
+        agg_input_tokens = len(enc.encode(agg_input_text)) if enc else len(agg_input_text) // 4
+        
+        start = time.time()
         final_review_msg = self.aggregator.reply(aggregator_input)
+        agg_latency = int((time.time() - start) * 1000)
+        
         final_content = final_review_msg.content
+        agg_output_text = str(final_content)
+        agg_output_tokens = len(enc.encode(agg_output_text)) if enc else len(agg_output_text) // 4
+        
+        agent_runs.append({
+            "agent_name": "aggregator",
+            "prompt_tokens": agg_input_tokens,
+            "completion_tokens": agg_output_tokens,
+            "latency_ms": agg_latency,
+            "status": "success"
+        })
         
         # Enforce review policy block_merge
         severity_thresholds = policy.get("severity_thresholds", {"block_on": ["CRITICAL"]})
@@ -125,5 +178,6 @@ class PRReviewPipeline:
         return {
             "orchestration_plan": plan,
             "findings": all_valid_findings,
-            "final_review": final_content
+            "final_review": final_content,
+            "agent_runs": agent_runs
         }
