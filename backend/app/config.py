@@ -12,11 +12,11 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str
     
     # Redis
-    REDIS_PASSWORD: str
+    REDIS_PASSWORD: Optional[str] = None
     REDIS_URL: str
     
     # Chroma
-    CHROMADB_URL: str
+    CHROMADB_URL: str = "http://localhost:8000"
     
     # LLMs
     GROQ_API_KEY: Optional[str] = None
