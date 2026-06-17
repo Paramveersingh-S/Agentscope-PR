@@ -1,12 +1,6 @@
 <div align="center">
   <img src="./assets/logo.png" alt="PR Sentinel Logo" width="800" style="border-radius: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
   <br />
-  <img src="./assets/Screenshot%20(530).png" alt="Dashboard Preview 1" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
-  <br />
-  <img src="./assets/Screenshot%20(531).png" alt="Dashboard Preview 2" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
-  <br />
-  <img src="./assets/Screenshot%20(532).png" alt="Dashboard Preview 3" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
-  <br />
   <img src="https://img.shields.io/badge/AgentScope-0.1.x-blue?style=for-the-badge&logo=python" alt="AgentScope" />
   <img src="https://img.shields.io/badge/FastAPI-0.111+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
@@ -21,7 +15,10 @@
 <br />
 
 AgentScope PR Sentinel automates and supercharges code review using a fleet of specialized AI agents. It integrates directly with GitHub via webhooks, analyzes pull requests across multiple domains (Security, Performance, Quality, Testing, Documentation, Dependency), and posts synthesized findings directly to the PR while offering a comprehensive Next.js dashboard for engineering teams.
-
+ <img src="./assets/Screenshot%20(530).png" alt="Dashboard Preview 1" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
+  <br />
+  <img src="./assets/Screenshot%20(532).png" alt="Dashboard Preview 3" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
+  <br />
 ## ✨ Features
 
 - **Multi-Agent Orchestration**: Powered by [AgentScope](https://github.com/modelscope/agentscope), coordinating 7 distinct LLM-driven agents.
