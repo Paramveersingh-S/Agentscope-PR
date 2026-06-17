@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from app.agents.agentscope_init import init_agentscope
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: init AgentScope, DB connection pools
+    init_agentscope()
     yield
+    # Shutdown: clean up resources
     # Shutdown: clean up resources
 
 app = FastAPI(
