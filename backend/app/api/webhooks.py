@@ -45,6 +45,8 @@ async def github_webhook(
             pr_number = pr.get("number")
             pr_title = pr.get("title")
             installation_id = installation.get("id")
+            github_repo_id = repo.get("id")
+            
             
             if repo_full_name and pr_number:
                 # Enqueue Celery task
@@ -52,7 +54,8 @@ async def github_webhook(
                     repo_full_name=repo_full_name,
                     pr_number=pr_number,
                     pr_title=pr_title,
-                    installation_id=installation_id
+                    installation_id=installation_id,
+                    github_repo_id=github_repo_id
                 )
                 return {"status": "accepted", "message": "PR review queued"}
                 

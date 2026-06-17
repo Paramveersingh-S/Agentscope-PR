@@ -30,7 +30,7 @@ def _run_async(coro):
     retry_backoff=True,
     retry_backoff_max=60
 )
-def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, installation_id: int):
+def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, installation_id: int, github_repo_id: int = None):
     logger.info(f"Starting review for {repo_full_name}#{pr_number}")
     start_time = time.time()
     
@@ -97,6 +97,7 @@ def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, 
                 if not repo:
                     # Upsert repo if it doesn't exist
                     repo = Repository(
+                        github_repo_id=github_repo_id or 0,
                         full_name=repo_full_name,
                         display_name=repo_full_name.split("/")[-1],
                         default_branch="main",

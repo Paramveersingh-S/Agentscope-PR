@@ -29,11 +29,12 @@ class FindingService:
                 title=f.get("title"),
                 description=f.get("description"),
                 severity=f.get("severity", "INFO"),
+                category=f.get("category", "GENERAL"),
                 file_path=f.get("file_path"),
                 line_start=f.get("line_start"),
                 line_end=f.get("line_end"),
                 code_snippet=f.get("code_snippet"),
-                agent_name=f.get("agent"),
+                agent_name=f.get("agent", "system"),
                 embedding=embedding,
                 duplicate_of=duplicate_of
             )
