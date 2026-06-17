@@ -41,7 +41,7 @@ def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, 
                 res = await session.execute(
                     select(PRReview)
                     .join(Repository)
-                    .filter(Repository.full_name == repo_full_name, PRReview.pr_number == str(pr_number), PRReview.status == "completed")
+                    .filter(Repository.full_name == repo_full_name, PRReview.pr_number == pr_number, PRReview.status == "completed")
                 )
                 return res.scalar_one_or_none()
                 
@@ -97,7 +97,7 @@ def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, 
                 if not repo:
                     return
                     
-                new_review = PRReview(repository_id=repo.id, pr_number=str(pr_number), title=pr_title, status="completed")
+                new_review = PRReview(repository_id=repo.id, pr_number=pr_number, title=pr_title, status="completed")
                 session.add(new_review)
                 await session.flush()
                 
