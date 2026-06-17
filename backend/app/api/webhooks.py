@@ -31,6 +31,7 @@ async def github_webhook(
     await verify_github_signature(request, x_hub_signature_256)
     
     payload = await request.json()
+    print(f"WEBHOOK RECEIVED: Event={x_github_event}, Action={payload.get('action')}")
     
     if x_github_event == "pull_request":
         action = payload.get("action")
