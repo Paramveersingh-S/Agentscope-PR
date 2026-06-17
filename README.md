@@ -39,7 +39,12 @@ graph TD
     E -->|Parallel Dispatch| J[DocumentationAgent]
     E -->|Parallel Dispatch| K[DependencyAgent]
     
-    F & G & H & I & J & K --> L[AggregatorAgent]
+    F --> L[AggregatorAgent]
+    G --> L
+    H --> L
+    I --> L
+    J --> L
+    K --> L
     
     L -->|Post Feedback| M[GitHub PR Comments]
     L -->|Store Findings| N[(PostgreSQL)]
