@@ -35,8 +35,8 @@ async def github_webhook(
     
     if x_github_event == "pull_request":
         action = payload.get("action")
-        # Only process opened or synchronize (new commits) events
-        if action in ["opened", "synchronize"]:
+        # Only process opened, synchronize (new commits), or reopened events
+        if action in ["opened", "synchronize", "reopened"]:
             pr = payload.get("pull_request", {})
             repo = payload.get("repository", {})
             installation = payload.get("installation", {})
