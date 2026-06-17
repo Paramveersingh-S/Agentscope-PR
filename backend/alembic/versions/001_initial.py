@@ -66,10 +66,10 @@ CREATE TABLE pr_reviews (
     created_at          TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(repository_id, pr_number, head_sha)
 );
-CREATE INDEX idx_pr_reviews_status ON pr_reviews(status);
-CREATE INDEX idx_pr_reviews_repository ON pr_reviews(repository_id);
-CREATE INDEX idx_pr_reviews_created ON pr_reviews(created_at DESC);
     """)
+    op.execute("CREATE INDEX idx_pr_reviews_status ON pr_reviews(status);")
+    op.execute("CREATE INDEX idx_pr_reviews_repository ON pr_reviews(repository_id);")
+    op.execute("CREATE INDEX idx_pr_reviews_created ON pr_reviews(created_at DESC);")
 
     op.execute("""
 CREATE TABLE agent_runs (
@@ -87,8 +87,8 @@ CREATE TABLE agent_runs (
     started_at          TIMESTAMPTZ,
     completed_at        TIMESTAMPTZ
 );
-CREATE INDEX idx_agent_runs_review ON agent_runs(review_id);
     """)
+    op.execute("CREATE INDEX idx_agent_runs_review ON agent_runs(review_id);")
 
     op.execute("""
 CREATE TABLE findings (
@@ -115,10 +115,10 @@ CREATE TABLE findings (
     embedding           VECTOR(1536),
     created_at          TIMESTAMPTZ DEFAULT NOW()
 );
-CREATE INDEX idx_findings_review ON findings(review_id);
-CREATE INDEX idx_findings_severity ON findings(severity);
-CREATE INDEX idx_findings_agent ON findings(agent_name);
     """)
+    op.execute("CREATE INDEX idx_findings_review ON findings(review_id);")
+    op.execute("CREATE INDEX idx_findings_severity ON findings(severity);")
+    op.execute("CREATE INDEX idx_findings_agent ON findings(agent_name);")
 
     op.execute("""
 CREATE TABLE review_policies (
