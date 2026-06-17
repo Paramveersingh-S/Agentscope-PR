@@ -2,7 +2,7 @@ import asyncio
 import json
 from celery.utils.log import get_task_logger
 from app.workers.celery_app import celery_app
-from app.services.github import GitHubService
+from app.services.github_service import GitHubService
 from app.pipeline.review_pipeline import PRReviewPipeline
 from app.database import AsyncSessionLocal
 
