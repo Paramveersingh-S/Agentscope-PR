@@ -43,7 +43,7 @@ def _build_model_configs() -> list:
             {
                 "model_type": "openai_chat",
                 "config_name": "groq_mixtral",
-                "model_name": "mixtral-8x7b-32768",
+                "model_name": "llama-3.1-8b-instant",
                 "api_key": settings.GROQ_API_KEY,
                 "client_args": {"base_url": "https://api.groq.com/openai/v1"},
                 "generate_args": {"temperature": 0.0, "max_tokens": 8192},
