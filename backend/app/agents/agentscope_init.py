@@ -35,7 +35,7 @@ def _build_model_configs() -> list:
             {
                 "model_type": "openai_chat",   # Groq is OpenAI-compatible
                 "config_name": "groq_llama3_70b",
-                "model_name": "llama3-70b-8192",
+                "model_name": "llama-3.3-70b-versatile",
                 "api_key": settings.GROQ_API_KEY,
                 "client_args": {"base_url": "https://api.groq.com/openai/v1"},
                 "generate_args": {"temperature": 0.1, "max_tokens": 4096},
