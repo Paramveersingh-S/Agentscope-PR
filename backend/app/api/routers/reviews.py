@@ -11,7 +11,7 @@ from app.models.repository import Repository
 
 router = APIRouter(prefix="/api/v1/reviews", tags=["Reviews"])
 
-@router.get("/")
+@router.get("")
 async def list_reviews(page: int = 1, status: str = None, repo: str = None, risk: str = None, db: AsyncSession = Depends(get_db)):
     limit = 20
     offset = (page - 1) * limit

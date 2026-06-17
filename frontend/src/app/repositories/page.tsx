@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getRepositories, syncRepositories } from '@/lib/api'
-import { Github, RefreshCw, Server, AlertCircle } from 'lucide-react'
+import { FolderGit2, RefreshCw, Server, AlertCircle } from 'lucide-react'
 
 export default function RepositoriesPage() {
   const queryClient = useQueryClient()
@@ -43,7 +43,7 @@ export default function RepositoriesPage() {
         </div>
       ) : !repos || repos.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[40vh] glass rounded-2xl border border-border/50">
-          <Github className="w-16 h-16 text-muted-foreground mb-4" />
+          <FolderGit2 className="w-16 h-16 text-muted-foreground mb-4" />
           <h2 className="text-xl font-semibold text-white mb-2">No Repositories Tracked</h2>
           <p className="text-muted-foreground mb-6 max-w-md text-center">
             Click the sync button above to fetch repositories that your GitHub App has been installed on.
@@ -55,7 +55,7 @@ export default function RepositoriesPage() {
             <div key={repo.id} className="glass p-6 rounded-xl border border-border/50 hover:border-primary/30 transition-colors">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
-                  <Github className="w-6 h-6 text-primary mr-3" />
+                  <FolderGit2 className="w-6 h-6 text-primary mr-3" />
                   <div>
                     <h3 className="font-semibold text-white">{repo.display_name || repo.full_name}</h3>
                     <p className="text-xs text-muted-foreground">{repo.full_name}</p>
