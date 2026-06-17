@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, Boolean, JSON, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, JSON, ForeignKey, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.models.base import Base
@@ -15,3 +16,4 @@ class ReviewPolicy(Base):
     max_diff_size_chars = Column(Integer, default=50000)
     token_budget = Column(Integer, default=50000)
     is_default = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

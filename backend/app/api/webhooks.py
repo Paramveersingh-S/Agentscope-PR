@@ -56,3 +56,11 @@ async def github_webhook(
                 return {"status": "accepted", "message": "PR review queued"}
                 
     return {"status": "ignored", "message": "Event not handled"}
+
+@router.post("/gitlab")
+async def gitlab_webhook(request: Request):
+    return {"status": "not_implemented"}
+
+@router.get("/health")
+async def webhook_health():
+    return {"status": "healthy"}

@@ -8,6 +8,13 @@ from app.config import settings
 
 def init_agentscope() -> None:
     """Initialize AgentScope with all configured model backends."""
+    if settings.LANGFUSE_PUBLIC_KEY:
+        os.environ["LANGFUSE_PUBLIC_KEY"] = settings.LANGFUSE_PUBLIC_KEY
+    if settings.LANGFUSE_SECRET_KEY:
+        os.environ["LANGFUSE_SECRET_KEY"] = settings.LANGFUSE_SECRET_KEY
+    if settings.LANGFUSE_HOST:
+        os.environ["LANGFUSE_HOST"] = settings.LANGFUSE_HOST
+        
     model_configs = _build_model_configs()
 
     agentscope.init(

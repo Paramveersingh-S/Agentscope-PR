@@ -16,3 +16,6 @@ agentscope>=0.1.0
 chromadb>=0.5.0
 tiktoken>=0.7.0
 python-multipart>=0.0.9
+langfuse>=2.0.0
+prometheus-client>=0.20.0
+locust>=2.29.0

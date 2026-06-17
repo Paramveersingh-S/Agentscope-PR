@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, BigInteger, Boolean, JSON, Text, Numeric, ForeignKey
+from sqlalchemy import Column, String, Integer, BigInteger, Boolean, JSON, Text, Numeric, ForeignKey, DateTime, UniqueConstraint
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.models.base import Base
@@ -29,8 +30,13 @@ class PRReview(Base):
     github_review_id = Column(BigInteger)
     error_message = Column(Text)
     token_usage = Column(JSON)
-    started_at = Column(String)
-    completed_at = Column(String)
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    __table_args__ = (
+        UniqueConstraint('repository_id', 'pr_number', 'head_sha', name='uq_pr_review_repo_pr_sha'),
+    )
     
     agent_runs = relationship("AgentRun", back_populates="review", cascade="all, delete-orphan")
     findings = relationship("Finding", back_populates="review", cascade="all, delete-orphan")
@@ -50,7 +56,7 @@ class AgentRun(Base):
     raw_output = Column(JSON)
     error_message = Column(Text)
     retry_count = Column(Integer, default=0)
-    started_at = Column(String)
-    completed_at = Column(String)
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
     
     review = relationship("PRReview", back_populates="agent_runs")

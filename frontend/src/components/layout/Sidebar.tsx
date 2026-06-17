@@ -1,52 +1,44 @@
-"use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, GitPullRequest, Settings, LineChart, ShieldAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const navItems = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Reviews", href: "/reviews", icon: GitPullRequest },
-  { name: "Repositories", href: "/repositories", icon: ShieldAlert },
-  { name: "Analytics", href: "/analytics", icon: LineChart },
-  { name: "Settings", href: "/settings", icon: Settings },
-];
+import Link from 'next/link'
+import { ShieldCheck, LayoutDashboard, GitPullRequest, Settings, PieChart } from 'lucide-react'
 
 export function Sidebar() {
-  const pathname = usePathname();
-
   return (
-    <aside className="w-64 border-r bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col h-screen overflow-y-auto">
-      <div className="p-6">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-          <ShieldAlert className="text-zinc-900 dark:text-zinc-100" />
-          PR Sentinel
+    <aside className="w-64 border-r border-border/50 glass h-screen sticky top-0 flex flex-col hidden md:flex">
+      <div className="h-16 flex items-center px-6 border-b border-border/50">
+        <ShieldCheck className="text-primary w-8 h-8 mr-3" />
+        <span className="font-bold text-xl tracking-tight text-white">PR Sentinel</span>
+      </div>
+      
+      <nav className="flex-1 py-6 px-4 space-y-2">
+        <Link href="/" className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent/50 hover:text-white transition-colors group">
+          <LayoutDashboard className="w-5 h-5 mr-3 group-hover:text-primary transition-colors" />
+          Dashboard
+        </Link>
+        <Link href="/reviews" className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent/50 hover:text-white transition-colors group">
+          <GitPullRequest className="w-5 h-5 mr-3 group-hover:text-secondary transition-colors" />
+          Reviews
+        </Link>
+        <Link href="/analytics" className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent/50 hover:text-white transition-colors group">
+          <PieChart className="w-5 h-5 mr-3 group-hover:text-primary transition-colors" />
+          Analytics
+        </Link>
+        <Link href="/repositories" className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent/50 hover:text-white transition-colors group">
+          <Settings className="w-5 h-5 mr-3 group-hover:text-secondary transition-colors" />
+          Repositories
+        </Link>
+      </nav>
+      
+      <div className="p-4 border-t border-border/50">
+        <div className="flex items-center gap-3 px-4 py-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center">
+            <span className="text-xs font-bold text-white">AS</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-white">Agent Swarm</span>
+            <span className="text-xs text-muted-foreground">Online</span>
+          </div>
         </div>
       </div>
-      <nav className="flex-1 px-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
-                isActive 
-                  ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 font-medium" 
-                  : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100/50 dark:hover:text-zinc-50 dark:hover:bg-zinc-800/50"
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="p-4 border-t mt-auto text-xs text-zinc-500 text-center">
-        AgentScope PR Sentinel v1.0
-      </div>
     </aside>
-  );
+  )
 }

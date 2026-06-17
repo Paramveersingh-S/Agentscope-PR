@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, Boolean, Text, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, Text, ForeignKey, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 from pgvector.sqlalchemy import Vector
 import uuid
@@ -28,6 +29,7 @@ class Finding(Base):
     duplicate_of = Column(UUID(as_uuid=True), ForeignKey("findings.id", ondelete="SET NULL"))
     user_feedback = Column(String(20))
     is_false_positive = Column(Boolean, default=False)
-    embedding = Column(Vector(1536))
+    embedding = Column(Vector(384))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     review = relationship("PRReview", back_populates="findings")

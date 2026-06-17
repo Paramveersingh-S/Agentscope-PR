@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from prometheus_client import make_asgi_app, Counter, Histogram
 from app.agents.agentscope_init import init_agentscope
 from app.api.webhooks import router as webhooks_router
 
@@ -36,3 +37,8 @@ app.include_router(auth_router)
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "service": "pr_sentinel"}
+
+# Mount Prometheus metrics endpoint
+metrics_app = make_asgi_app()
+app.mount("/metrics", metrics_app)
+

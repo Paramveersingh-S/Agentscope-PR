@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, BigInteger, Boolean, Text
+from sqlalchemy import Column, String, BigInteger, Boolean, Text, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.models.base import Base
@@ -14,4 +15,5 @@ class User(Base):
     avatar_url = Column(Text)
     role = Column(String(50), default='member')
     is_active = Column(Boolean, default=True)
-    last_login_at = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login_at = Column(DateTime(timezone=True))

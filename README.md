@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./logo.png" alt="PR Sentinel Logo" width="250" style="border-radius: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
+  <img src="./assets/logo.png" alt="PR Sentinel Logo" width="800" style="border-radius: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;" />
   <br />
   <br />
   <img src="https://img.shields.io/badge/AgentScope-0.1.x-blue?style=for-the-badge&logo=python" alt="AgentScope" />

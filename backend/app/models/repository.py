@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, BigInteger, Boolean, JSON
+from sqlalchemy import Column, String, BigInteger, Boolean, JSON, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.models.base import Base
@@ -16,3 +17,5 @@ class Repository(Base):
     webhook_secret = Column(String(255))
     is_active = Column(Boolean, default=True)
     review_config = Column(JSON, default={"auto_review": True, "block_on_critical": True})
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

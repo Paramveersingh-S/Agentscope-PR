@@ -46,6 +46,7 @@ yarn-error.log*
 .env.*.local
 .DS_Store
 Thumbs.db
+PROJECT_1_AgentScope_PR_Sentinel.md
 
 # Docker / Local DBs
 postgres_data/
