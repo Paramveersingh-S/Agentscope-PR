@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/v1/repositories", tags=["Repositories"])
 
 @router.get("")
 async def list_repositories(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Repository).order_by(Repository.full_name))
+    result = await db.execute(select(Repository).order_by(Repository.updated_at.desc()))
     repos = result.scalars().all()
     return repos
 

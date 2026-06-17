@@ -37,7 +37,7 @@ class GitHubService:
             # Github API for installation repos is not fully wrapped in PyGithub in an easy way,
             # but we can use the requester to hit the endpoint
             headers, data = gh._Github__requester.requestJsonAndCheck(
-                "GET", "/installation/repositories"
+                "GET", "/installation/repositories?per_page=100"
             )
             
             for repo_data in data.get("repositories", []):

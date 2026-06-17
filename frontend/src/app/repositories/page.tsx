@@ -2,7 +2,8 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getRepositories, syncRepositories } from '@/lib/api'
-import { FolderGit2, RefreshCw, Server, AlertCircle } from 'lucide-react'
+import { useState } from 'react'
+import { FolderGit2, RefreshCw, Server, AlertCircle, Search } from 'lucide-react'
 
 export default function RepositoriesPage() {
   const queryClient = useQueryClient()
@@ -15,21 +16,39 @@ export default function RepositoriesPage() {
     }
   })
 
+  const [search, setSearch] = useState("");
+  const filteredRepos = repos?.filter((repo: any) => 
+    repo.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+    repo.display_name?.toLowerCase().includes(search.toLowerCase())
+  ) || [];
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Repositories</h1>
           <p className="text-muted-foreground">Manage your tracked GitHub repositories and webhook settings.</p>
         </div>
-        <button 
-          onClick={() => syncMutation.mutate()} 
-          disabled={syncMutation.isPending}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors flex items-center disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 mr-2 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
-          {syncMutation.isPending ? 'Syncing...' : 'Sync GitHub'}
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input 
+              type="text" 
+              placeholder="Search repositories..." 
+              className="w-full sm:w-64 glass bg-accent/20 border border-border/50 text-white rounded-lg pl-10 p-2 focus:ring-primary focus:border-primary transition-all"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <button 
+            onClick={() => syncMutation.mutate()} 
+            disabled={syncMutation.isPending}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors flex items-center disabled:opacity-50 h-10"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
+            {syncMutation.isPending ? 'Syncing...' : 'Sync GitHub'}
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -51,7 +70,7 @@ export default function RepositoriesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {repos.map((repo: any) => (
+          {filteredRepos.map((repo: any) => (
             <div key={repo.id} className="glass p-6 rounded-xl border border-border/50 hover:border-primary/30 transition-colors">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
@@ -74,6 +93,11 @@ export default function RepositoriesPage() {
               </div>
             </div>
           ))}
+          {filteredRepos.length === 0 && search && (
+            <div className="col-span-full py-12 text-center text-muted-foreground">
+              No repositories match "{search}"
+            </div>
+          )}
         </div>
       )}
     </div>
