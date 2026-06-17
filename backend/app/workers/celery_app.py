@@ -1,10 +1,9 @@
 from celery import Celery
 from app.config import settings
-import agentscope
-from app.config import agentscope_config
+from app.agents.agentscope_init import init_agentscope
 
 # Initialize AgentScope models for the worker process
-agentscope.init(model_configs=agentscope_config)
+init_agentscope()
 
 celery_app = Celery(
     "pr_sentinel",
