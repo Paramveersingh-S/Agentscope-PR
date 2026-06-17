@@ -3,6 +3,13 @@ from contextlib import asynccontextmanager
 from app.agents.agentscope_init import init_agentscope
 from app.api.webhooks import router as webhooks_router
 
+from app.api.routers.reviews import router as reviews_router
+from app.api.routers.findings import router as findings_router
+from app.api.routers.repositories import router as repositories_router
+from app.api.routers.analytics import router as analytics_router
+from app.api.routers.settings import router as settings_router
+from app.api.routers.auth import router as auth_router
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: init AgentScope, DB connection pools
@@ -19,6 +26,12 @@ app = FastAPI(
 )
 
 app.include_router(webhooks_router)
+app.include_router(reviews_router)
+app.include_router(findings_router)
+app.include_router(repositories_router)
+app.include_router(analytics_router)
+app.include_router(settings_router)
+app.include_router(auth_router)
 
 @app.get("/health")
 async def health_check():
