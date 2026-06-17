@@ -5,7 +5,9 @@
   <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+  <img src="https://img.shields.io/badge/Celery-5.3+-37814A?style=for-the-badge&logo=celery&logoColor=white" alt="Celery" />
   <img src="https://img.shields.io/badge/ChromaDB-0.5+-FF6B6B?style=for-the-badge" alt="ChromaDB" />
+  <img src="https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
 
   <h1>🛡️ AgentScope PR Sentinel</h1>
   <p><strong>Enterprise-Grade Multi-Agent Pull Request Intelligence Platform</strong></p>
@@ -52,9 +54,11 @@ graph TD
     
     L -->|Post Feedback| M[GitHub PR Comments]
     L -->|Store Findings| N[(PostgreSQL)]
+    L -->|Record Telemetry| N
     L -->|Embeddings| O[(ChromaDB)]
     
-    N --> P[Next.js Dashboard]
+    N -->|API Data| P[Next.js Dashboard]
+    N -->|Agent Token Usage| P
     O --> P
 ```
 
