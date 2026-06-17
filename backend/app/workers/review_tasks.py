@@ -95,9 +95,25 @@ def process_pr_review(self, repo_full_name: str, pr_number: int, pr_title: str, 
                 repo_res = await session.execute(select(Repository).filter(Repository.full_name == repo_full_name))
                 repo = repo_res.scalar_one_or_none()
                 if not repo:
-                    return
+                    # Upsert repo if it doesn't exist
+                    repo = Repository(
+                        full_name=repo_full_name,
+                        display_name=repo_full_name.split("/")[-1],
+                        default_branch="main",
+                        is_active=True
+                    )
+                    session.add(repo)
+                    await session.flush()
                     
-                new_review = PRReview(repository_id=repo.id, pr_number=pr_number, title=pr_title, status="completed")
+                new_review = PRReview(
+                    repository_id=repo.id, 
+                    pr_number=pr_number, 
+                    pr_title=pr_title, 
+                    status="completed",
+                    overall_score=final_review.get("overall_score"),
+                    recommendation=final_review.get("overall_recommendation"),
+                    final_summary=final_review.get("executive_summary")
+                )
                 session.add(new_review)
                 await session.flush()
                 
