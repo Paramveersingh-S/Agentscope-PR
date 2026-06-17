@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.models.base import Base
+from sqlalchemy.orm import relationship
 
 class Repository(Base):
     __tablename__ = "repositories"
@@ -19,3 +20,5 @@ class Repository(Base):
     review_config = Column(JSON, default={"auto_review": True, "block_on_critical": True})
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    reviews = relationship("PRReview", back_populates="repository", cascade="all, delete-orphan")

@@ -40,6 +40,7 @@ class PRReview(Base):
     
     agent_runs = relationship("AgentRun", back_populates="review", cascade="all, delete-orphan")
     findings = relationship("Finding", back_populates="review", cascade="all, delete-orphan")
+    repository = relationship("Repository", back_populates="reviews")
 
 
 class AgentRun(Base):
